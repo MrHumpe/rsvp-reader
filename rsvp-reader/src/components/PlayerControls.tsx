@@ -43,11 +43,8 @@ function PlayerControlsComponent({ playState, onToggle, onJump, onReset, disable
   return (
     <View style={styles.container}>
       {/* Jump backward */}
-      <View style={styles.jumpGroup}>
-        <JumpButton label="−20" onPress={() => handleJump(-20)} color={c} disabled={disabled} />
-        <JumpButton label="−10" onPress={() => handleJump(-10)} color={c} disabled={disabled} />
-        <JumpButton label="−5"  onPress={() => handleJump(-5)}  color={c} disabled={disabled} />
-      </View>
+      <JumpButton label="−20" onPress={() => handleJump(-20)} color={c} disabled={disabled} />
+      <JumpButton label="−5"  onPress={() => handleJump(-5)}  color={c} disabled={disabled} />
 
       {/* Play / Pause – primary CTA */}
       <TouchableOpacity
@@ -70,13 +67,10 @@ function PlayerControlsComponent({ playState, onToggle, onJump, onReset, disable
       </TouchableOpacity>
 
       {/* Jump forward */}
-      <View style={styles.jumpGroup}>
-        <JumpButton label="+5"  onPress={() => handleJump(5)}  color={c} disabled={disabled} />
-        <JumpButton label="+10" onPress={() => handleJump(10)} color={c} disabled={disabled} />
-        <JumpButton label="+20" onPress={() => handleJump(20)} color={c} disabled={disabled} />
-      </View>
+      <JumpButton label="+5"  onPress={() => handleJump(5)}  color={c} disabled={disabled} />
+      <JumpButton label="+20" onPress={() => handleJump(20)} color={c} disabled={disabled} />
 
-      {/* Reset button */}
+      {/* Reset */}
       <TouchableOpacity
         style={[styles.resetButton, { borderColor: c.border }]}
         onPress={handleReset}
@@ -136,10 +130,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems:     'center',
   },
-  jumpGroup: {
-    flexDirection: 'row',
-    gap:           4,
-  },
   jumpButton: {
     paddingHorizontal: 10,
     paddingVertical:    8,
@@ -156,8 +146,6 @@ const styles = StyleSheet.create({
     padding:      10,
     borderRadius: Radius.sm,
     borderWidth:  0.5,
-    position:     'absolute',
-    right:        0,
   },
   disabledButton: {
     opacity: 0.35,
