@@ -17,7 +17,27 @@
       "bundleIdentifier": "com.yourcompany.rsvpreader",
       "infoPlist": {
         "UIFileSharingEnabled": true,
-        "LSSupportsOpeningDocumentsInPlace": true
+        "LSSupportsOpeningDocumentsInPlace": true,
+        "CFBundleDocumentTypes": [
+          {
+            "CFBundleTypeName": "PDF Document",
+            "LSHandlerRank": "Alternate",
+            "LSItemContentTypes": ["com.adobe.pdf"]
+          },
+          {
+            "CFBundleTypeName": "Word Document",
+            "LSHandlerRank": "Alternate",
+            "LSItemContentTypes": [
+              "org.openxmlformats.wordprocessingml.document",
+              "com.microsoft.word.doc"
+            ]
+          },
+          {
+            "CFBundleTypeName": "Text File",
+            "LSHandlerRank": "Alternate",
+            "LSItemContentTypes": ["public.plain-text", "public.text"]
+          }
+        ]
       }
     },
     "android": {
@@ -28,6 +48,39 @@
       "package": "com.yourcompany.rsvpreader",
       "permissions": [
         "READ_EXTERNAL_STORAGE"
+      ],
+      "intentFilters": [
+        {
+          "action": "android.intent.action.VIEW",
+          "data": [
+            { "mimeType": "application/pdf" },
+            { "mimeType": "text/plain" },
+            { "mimeType": "application/msword" },
+            { "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document" }
+          ],
+          "category": [
+            "android.intent.category.DEFAULT",
+            "android.intent.category.BROWSABLE"
+          ]
+        },
+        {
+          "action": "android.intent.action.SEND",
+          "data": [{ "mimeType": "text/plain" }],
+          "category": ["android.intent.category.DEFAULT"]
+        },
+        {
+          "action": "android.intent.action.SEND",
+          "data": [{ "mimeType": "application/pdf" }],
+          "category": ["android.intent.category.DEFAULT"]
+        },
+        {
+          "action": "android.intent.action.SEND",
+          "data": [
+            { "mimeType": "application/msword" },
+            { "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document" }
+          ],
+          "category": ["android.intent.category.DEFAULT"]
+        }
       ]
     },
     "web": {

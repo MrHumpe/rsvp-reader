@@ -18,6 +18,7 @@ import { formatTime, splitWords } from '../utils/textExtractor';
 import { hashText, upsertDoc, saveBookmark, getDoc } from '../utils/library';
 import { consumePendingDoc } from '../utils/pendingLoad';
 import { isOnboardingDone, markOnboardingDone } from '../utils/onboarding';
+import { useSharedContent }  from '../hooks/useSharedContent';
 import { WordDisplay }        from '../components/WordDisplay';
 import { PlayerControls }     from '../components/PlayerControls';
 import { WpmSlider, ProgressBar } from '../components/WpmSlider';
@@ -131,6 +132,10 @@ export default function ReaderScreen() {
       saveSettings(updated);
     }
   }, [controls, settings]);
+
+  // ─── Eingehende geteilte Dateien (Android Intent / iOS "In App öffnen") ───
+
+  useSharedContent(handleTextReady);
 
   // ─── Onboarding abschließen ───────────────────────────────────────────────
 
