@@ -14,7 +14,7 @@
 
 import { useEffect, useCallback, useRef } from 'react';
 import { Linking } from 'react-native';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { extractText } from '../utils/textExtractor';
 
 type OnSharedCallback = (text: string, filename: string) => void;

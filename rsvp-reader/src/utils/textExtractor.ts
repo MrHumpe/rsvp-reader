@@ -2,7 +2,7 @@
 // Handles reading plain text, PDF, and Word (.docx) files.
 // Returns a plain string ready for the word-splitter.
 
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 export type SupportedMimeType =
   | 'text/plain'
