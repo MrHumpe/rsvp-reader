@@ -151,13 +151,29 @@ export const DocumentPickerView = memo(function DocumentPickerView({ wpm, onText
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <View style={styles.modalHeader}>
-            <Text style={[styles.modalTitle, { color: c.text }]}>Text einfügen</Text>
             <TouchableOpacity
               onPress={() => setPasteModal(false)}
-              accessibilityLabel="Schließen"
+              accessibilityLabel="Abbrechen"
               accessibilityRole="button"
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
               <Ionicons name="close" size={24} color={c.textSecondary} />
+            </TouchableOpacity>
+
+            <Text style={[styles.modalTitle, { color: c.text }]}>Text einfügen</Text>
+
+            <TouchableOpacity
+              style={[
+                styles.confirmButton,
+                { backgroundColor: c.buttonBg },
+                !pasteText.trim() && { opacity: 0.4 },
+              ]}
+              onPress={handlePasteConfirm}
+              disabled={!pasteText.trim()}
+              accessibilityLabel="Text laden"
+              accessibilityRole="button"
+            >
+              <Text style={[styles.confirmLabel, { color: c.buttonText }]}>Laden</Text>
             </TouchableOpacity>
           </View>
 
@@ -181,20 +197,6 @@ export const DocumentPickerView = memo(function DocumentPickerView({ wpm, onText
               {formatTime(estimateReadingTime(pasteText.trim().split(/\s+/).length, wpm))} bei {wpm} wpm
             </Text>
           )}
-
-          <TouchableOpacity
-            style={[
-              styles.confirmButton,
-              { backgroundColor: c.buttonBg },
-              !pasteText.trim() && { opacity: 0.4 },
-            ]}
-            onPress={handlePasteConfirm}
-            disabled={!pasteText.trim()}
-            accessibilityLabel="Text laden"
-            accessibilityRole="button"
-          >
-            <Text style={[styles.confirmLabel, { color: c.buttonText }]}>Text laden</Text>
-          </TouchableOpacity>
         </KeyboardAvoidingView>
       </Modal>
     </View>
@@ -257,7 +259,7 @@ const styles = StyleSheet.create({
     marginTop:      Spacing.sm,
   },
   modalTitle: {
-    ...Typography.heading,
+    ...Typography.subheading,
   },
   textArea: {
     flex:         1,
@@ -274,12 +276,13 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   confirmButton: {
-    borderRadius: Radius.md,
-    padding:      16,
-    alignItems:   'center',
-    marginBottom: Spacing.md,
+    borderRadius:      Radius.md,
+    paddingHorizontal: 16,
+    paddingVertical:    8,
+    alignItems:        'center',
   },
   confirmLabel: {
-    ...Typography.subheading,
+    ...Typography.body,
+    fontWeight: '600',
   },
 });
