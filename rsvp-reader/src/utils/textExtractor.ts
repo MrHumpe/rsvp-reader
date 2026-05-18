@@ -18,7 +18,7 @@ export type ExtractionResult =
 
 async function extractTxt(uri: string): Promise<string> {
   const content = await FileSystem.readAsStringAsync(uri, {
-    encoding: FileSystem.EncodingType.UTF8,
+    encoding: 'utf8',
   });
   return content;
 }
@@ -29,7 +29,7 @@ async function extractTxt(uri: string): Promise<string> {
 async function extractDocx(uri: string): Promise<string> {
   // Read the file as base64 then convert to ArrayBuffer for mammoth
   const base64 = await FileSystem.readAsStringAsync(uri, {
-    encoding: FileSystem.EncodingType.Base64,
+    encoding: 'base64',
   });
 
   // Convert base64 → Uint8Array
@@ -53,7 +53,7 @@ async function extractDocx(uri: string): Promise<string> {
 
 async function extractPdf(uri: string): Promise<string> {
   const base64 = await FileSystem.readAsStringAsync(uri, {
-    encoding: FileSystem.EncodingType.Base64,
+    encoding: 'base64',
   });
 
   const binary = atob(base64);
