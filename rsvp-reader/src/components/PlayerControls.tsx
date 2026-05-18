@@ -42,35 +42,35 @@ function PlayerControlsComponent({ playState, onToggle, onJump, onReset, disable
 
   return (
     <View style={styles.container}>
-      {/* Jump backward */}
-      <JumpButton label="−20" onPress={() => handleJump(-20)} color={c} disabled={disabled} />
-      <JumpButton label="−5"  onPress={() => handleJump(-5)}  color={c} disabled={disabled} />
+      {/* Centered transport controls */}
+      <View style={styles.controls}>
+        <JumpButton label="−20" onPress={() => handleJump(-20)} color={c} disabled={disabled} />
+        <JumpButton label="−5"  onPress={() => handleJump(-5)}  color={c} disabled={disabled} />
 
-      {/* Play / Pause – primary CTA */}
-      <TouchableOpacity
-        style={[
-          styles.playButton,
-          { backgroundColor: c.buttonBg },
-          disabled && styles.disabledButton,
-        ]}
-        onPress={handleToggle}
-        disabled={disabled}
-        activeOpacity={0.8}
-        accessibilityLabel={isPlaying ? 'Pause' : 'Abspielen'}
-        accessibilityRole="button"
-      >
-        <Ionicons
-          name={isPlaying ? 'pause' : 'play'}
-          size={28}
-          color={c.buttonText}
-        />
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.playButton,
+            { backgroundColor: c.buttonBg },
+            disabled && styles.disabledButton,
+          ]}
+          onPress={handleToggle}
+          disabled={disabled}
+          activeOpacity={0.8}
+          accessibilityLabel={isPlaying ? 'Pause' : 'Abspielen'}
+          accessibilityRole="button"
+        >
+          <Ionicons
+            name={isPlaying ? 'pause' : 'play'}
+            size={28}
+            color={c.buttonText}
+          />
+        </TouchableOpacity>
 
-      {/* Jump forward */}
-      <JumpButton label="+5"  onPress={() => handleJump(5)}  color={c} disabled={disabled} />
-      <JumpButton label="+20" onPress={() => handleJump(20)} color={c} disabled={disabled} />
+        <JumpButton label="+5"  onPress={() => handleJump(5)}  color={c} disabled={disabled} />
+        <JumpButton label="+20" onPress={() => handleJump(20)} color={c} disabled={disabled} />
+      </View>
 
-      {/* Reset */}
+      {/* Reset – absolute so it doesn't shift the centered controls */}
       <TouchableOpacity
         style={[styles.resetButton, { borderColor: c.border }]}
         onPress={handleReset}
@@ -116,12 +116,13 @@ export const PlayerControls = memo(PlayerControlsComponent);
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection:  'row',
-    alignItems:     'center',
-    justifyContent: 'center',
-    gap:            Spacing.sm,
-    flexWrap:       'wrap',
-    marginBottom:   Spacing.md,
+    alignItems:   'center',
+    marginBottom: Spacing.md,
+  },
+  controls: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    gap:           Spacing.sm,
   },
   playButton: {
     width:          64,
@@ -143,6 +144,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   resetButton: {
+    position:     'absolute',
+    right:        0,
     padding:      10,
     borderRadius: Radius.sm,
     borderWidth:  0.5,

@@ -173,7 +173,7 @@ export const DocumentPickerView = memo(function DocumentPickerView({ wpm, onText
               accessibilityLabel="Text laden"
               accessibilityRole="button"
             >
-              <Text style={[styles.confirmLabel, { color: c.buttonText }]}>Laden</Text>
+              <Text style={[styles.confirmLabel, { color: c.buttonText }]}>Übernehmen</Text>
             </TouchableOpacity>
           </View>
 
