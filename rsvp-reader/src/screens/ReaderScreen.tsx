@@ -36,11 +36,16 @@ export default function ReaderScreen() {
   // ─── Initialisation ────────────────────────────────────────────────────────
 
   useEffect(() => {
-    loadSettings().then(setSettings);
     isOnboardingDone().then((done) => {
       if (!done) setShowOnboarding(true);
     });
   }, []);
+
+  // Reload settings every time the tab comes into focus so changes from
+  // SettingsScreen (rhythmicPauses, fontSize, etc.) take effect immediately.
+  useFocusEffect(useCallback(() => {
+    loadSettings().then(setSettings);
+  }, []));
 
   useKeepAwake();
 

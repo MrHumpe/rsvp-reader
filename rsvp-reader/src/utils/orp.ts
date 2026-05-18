@@ -55,7 +55,7 @@ export function intervalForWord(word: string, wpm: number): number {
   const endsWithStop = /[.!?…]$/.test(word);
   const endsWithComma = /[,;:]$/.test(word);
 
-  if (endsWithStop)  return baseMs + Math.round(baseMs * 0.8);
-  if (endsWithComma) return baseMs + Math.round(baseMs * 0.3);
+  if (endsWithStop)  return baseMs + Math.round(baseMs * 1.8);
+  if (endsWithComma) return baseMs + Math.round(baseMs * 0.6);
   return baseMs;
 }
