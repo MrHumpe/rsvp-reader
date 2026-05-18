@@ -12,6 +12,7 @@ export interface AppSettings {
   fontSize:          'small' | 'medium' | 'large';
   keepScreenAwake:   boolean;  // prevent sleep while reading
   rhythmicPauses:    boolean;  // longer pause after sentence endings
+  lengthPauses:      boolean;  // longer display time for longer words
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -21,6 +22,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   fontSize:        'large',
   keepScreenAwake: true,
   rhythmicPauses:  true,
+  lengthPauses:    true,
 };
 
 const STORAGE_KEY = '@rsvp_settings_v1';

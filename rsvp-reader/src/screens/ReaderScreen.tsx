@@ -51,7 +51,7 @@ export default function ReaderScreen() {
 
   const safeSettings: AppSettings = settings ?? {
     wpm: 300, showCountdown: true, showOrp: true,
-    fontSize: 'large', keepScreenAwake: true, rhythmicPauses: true,
+    fontSize: 'large', keepScreenAwake: true, rhythmicPauses: true, lengthPauses: true,
   };
 
   const [state, controls] = useRsvpEngine(safeSettings);

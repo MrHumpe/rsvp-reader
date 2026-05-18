@@ -67,9 +67,15 @@ export function useRsvpEngine(settings: AppSettings): [RsvpState, RsvpControls] 
     }
 
     const word = currentWords[pos];
-    const ms   = settingsRef.current.rhythmicPauses
+    let ms = settingsRef.current.rhythmicPauses
       ? intervalForWord(word, wpmRef.current)
       : Math.round(60_000 / wpmRef.current);
+
+    if (settingsRef.current.lengthPauses) {
+      const letters = [...word].filter((c) => /\p{L}/u.test(c)).length;
+      const factor  = Math.min(Math.max(0.7 + letters * 0.08, 0.7), 2.0);
+      ms = Math.round(ms * factor);
+    }
 
     timerRef.current = setTimeout(() => {
       const nextPos = posRef.current + 1;

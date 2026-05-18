@@ -122,6 +122,13 @@ export default function SettingsScreen() {
           />
           <Separator color={c} />
           <ToggleRow
+            label="Längenanpassung"
+            description="Längere Wörter bekommen mehr Anzeigezeit"
+            value={settings.lengthPauses}
+            onChange={(v) => update('lengthPauses', v)}
+          />
+          <Separator color={c} />
+          <ToggleRow
             label="Bildschirm wach halten"
             description="Verhindert den Ruhezustand während des Lesens"
             value={settings.keepScreenAwake}
