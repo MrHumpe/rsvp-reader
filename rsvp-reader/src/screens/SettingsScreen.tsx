@@ -14,10 +14,12 @@ import {
 import { ToggleRow } from '../components/ToggleRow';
 import { useTheme } from '../hooks/useTheme';
 import { Colors, Typography, Spacing, Radius } from '../theme';
+import { OnboardingModal } from './OnboardingModal';
 
 export default function SettingsScreen() {
   const c = useTheme();
   const [settings, setSettings] = useState<AppSettings | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     loadSettings().then(setSettings);
@@ -139,6 +141,19 @@ export default function SettingsScreen() {
           <InfoRow label="Methode"     value="RSVP + ORP-Pivot" color={c} />
         </Card>
 
+        {/* Intro */}
+        <TouchableOpacity
+          style={[styles.resetButton, { borderColor: c.border }]}
+          onPress={() => setShowOnboarding(true)}
+          accessibilityLabel="Einführung erneut anzeigen"
+          accessibilityRole="button"
+        >
+          <Ionicons name="play-circle-outline" size={16} color={c.text} />
+          <Text style={[styles.resetLabel, { color: c.text }]}>
+            Einführung erneut anzeigen
+          </Text>
+        </TouchableOpacity>
+
         {/* Reset */}
         <TouchableOpacity
           style={[styles.resetButton, { borderColor: '#E24B4A' }]}
@@ -152,6 +167,11 @@ export default function SettingsScreen() {
           </Text>
         </TouchableOpacity>
       </ScrollView>
+
+      <OnboardingModal
+        visible={showOnboarding}
+        onFinish={() => setShowOnboarding(false)}
+      />
     </SafeAreaView>
   );
 }
