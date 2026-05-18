@@ -191,6 +191,7 @@ export default function ReaderScreen() {
             position={state.position}
             total={state.words.length}
             timeLeft={formatTime(state.timeLeftSecs)}
+            onSeek={controls.seekTo}
           />
         )}
 

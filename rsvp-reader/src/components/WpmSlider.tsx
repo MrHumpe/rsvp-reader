@@ -40,31 +40,35 @@ export const WpmSlider = memo(function WpmSlider({ wpm, onChange }: WpmSliderPro
 });
 
 // ─── Progress Bar ──────────────────────────────────────────────────────────────
-// src/components/ProgressBar.tsx
 
 interface ProgressBarProps {
   progress:   number;   // 0–1
   position:   number;
   total:      number;
   timeLeft:   string;
+  onSeek:     (position: number) => void;
 }
 
 export const ProgressBar = memo(function ProgressBar({
-  progress, position, total, timeLeft,
+  progress, position, total, timeLeft, onSeek,
 }: ProgressBarProps) {
   const scheme = useColorScheme();
   const c      = scheme === 'dark' ? Colors.dark : Colors.light;
 
   return (
     <View style={pbStyles.container}>
-      <View style={[pbStyles.track, { backgroundColor: c.progressBg }]}>
-        <View
-          style={[
-            pbStyles.fill,
-            { width: `${(progress * 100).toFixed(1)}%`, backgroundColor: c.progressBar },
-          ]}
-        />
-      </View>
+      <Slider
+        style={pbStyles.slider}
+        minimumValue={0}
+        maximumValue={Math.max(total - 1, 0)}
+        step={1}
+        value={position}
+        onValueChange={onSeek}
+        minimumTrackTintColor={c.progressBar}
+        maximumTrackTintColor={c.progressBg}
+        thumbTintColor={c.progressBar}
+        accessibilityLabel={`Position: Wort ${position + 1} von ${total}`}
+      />
       <View style={pbStyles.stats}>
         <Text style={[pbStyles.stat, { color: c.textSecondary }]}>
           {position + 1} / {total}
@@ -109,21 +113,16 @@ const styles = StyleSheet.create({
 
 const pbStyles = StyleSheet.create({
   container: {
-    marginBottom: 12,
+    marginBottom: 4,
   },
-  track: {
-    height:       3,
-    borderRadius: 2,
-    overflow:     'hidden',
-  },
-  fill: {
-    height:       3,
-    borderRadius: 2,
+  slider: {
+    width:  '100%',
+    height: 36,
   },
   stats: {
     flexDirection:  'row',
     justifyContent: 'space-between',
-    marginTop:       6,
+    marginTop:      2,
   },
   stat: {
     ...Typography.caption,
