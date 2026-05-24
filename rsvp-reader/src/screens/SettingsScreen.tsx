@@ -181,7 +181,7 @@ export default function SettingsScreen() {
           <Separator color={c} />
           <ToggleRow
             label="Verneinungserkennung"
-            description="„nicht", „kein", „never" u.ä. länger anzeigen"
+            description={'"nicht", "kein", "never" u.ä. länger anzeigen'}
             value={settings.negationBoost}
             onChange={(v) => update('negationBoost', v)}
           />
