@@ -2,8 +2,9 @@
 // A labelled on/off switch for the settings area.
 
 import React, { memo } from 'react';
-import { View, Text, Switch, StyleSheet, useColorScheme, Platform } from 'react-native';
-import { Colors, Typography } from '../theme';
+import { View, Text, Switch, StyleSheet, Platform } from 'react-native';
+import { Typography } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 interface Props {
   label:       string;
@@ -15,8 +16,7 @@ interface Props {
 export const ToggleRow = memo(function ToggleRow({
   label, description, value, onChange,
 }: Props) {
-  const scheme = useColorScheme();
-  const c      = scheme === 'dark' ? Colors.dark : Colors.light;
+  const c = useTheme();
 
   return (
     <View style={styles.row}>

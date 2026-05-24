@@ -4,11 +4,13 @@
 
 import React, { memo } from 'react';
 import {
-  View, TouchableOpacity, Text, StyleSheet, useColorScheme,
+  View, TouchableOpacity, Text, StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { Colors, Spacing, Radius } from '../theme';
+import { Spacing, Radius } from '../theme';
+import { useTheme } from '../hooks/useTheme';
+import type { AppTheme } from '../utils/themes';
 import type { PlayState } from '../hooks/useRsvpEngine';
 
 interface Props {
@@ -20,9 +22,7 @@ interface Props {
 }
 
 function PlayerControlsComponent({ playState, onToggle, onJump, onReset, disabled }: Props) {
-  const scheme = useColorScheme();
-  const c      = scheme === 'dark' ? Colors.dark : Colors.light;
-
+  const c         = useTheme();
   const isPlaying = playState === 'playing' || playState === 'countdown';
 
   const handleToggle = () => {
@@ -89,7 +89,7 @@ function PlayerControlsComponent({ playState, onToggle, onJump, onReset, disable
 interface JumpButtonProps {
   label:    string;
   onPress:  () => void;
-  color:    typeof Colors.light;
+  color:    AppTheme;
   disabled: boolean;
 }
 

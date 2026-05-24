@@ -4,7 +4,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { splitWords, estimateReadingTime } from '../utils/textExtractor';
-import { intervalForWord } from '../utils/orp';
+import { computeDisplayTime } from '../utils/orp';
 import type { AppSettings } from '../utils/settings';
 
 export type PlayState = 'idle' | 'countdown' | 'playing' | 'paused' | 'finished';
@@ -48,6 +48,15 @@ export function useRsvpEngine(settings: AppSettings): [RsvpState, RsvpControls] 
   useEffect(() => { wpmRef.current = wpm; }, [wpm]);
   useEffect(() => { settingsRef.current = settings; }, [settings]);
 
+  // Sync WPM state when settings.wpm changes externally (e.g. mode preset applied)
+  useEffect(() => {
+    if (settings.wpm !== wpm) {
+      wpmRef.current = settings.wpm;
+      setWpmState(settings.wpm);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings.wpm]);
+
   const clearTimer = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = null;
@@ -67,15 +76,13 @@ export function useRsvpEngine(settings: AppSettings): [RsvpState, RsvpControls] 
     }
 
     const word = currentWords[pos];
-    let ms = settingsRef.current.rhythmicPauses
-      ? intervalForWord(word, wpmRef.current)
-      : Math.round(60_000 / wpmRef.current);
-
-    if (settingsRef.current.lengthPauses) {
-      const letters = [...word].filter((c) => /\p{L}/u.test(c)).length;
-      const factor  = Math.min(Math.max(0.7 + letters * 0.08, 0.7), 2.0);
-      ms = Math.round(ms * factor);
-    }
+    const s    = settingsRef.current;
+    const ms   = computeDisplayTime(word, wpmRef.current, {
+      rhythmicPauses: s.rhythmicPauses,
+      lengthPauses:   s.lengthPauses,
+      negationBoost:  s.negationBoost,
+      numberBoost:    s.numberBoost,
+    });
 
     timerRef.current = setTimeout(() => {
       const nextPos = posRef.current + 1;

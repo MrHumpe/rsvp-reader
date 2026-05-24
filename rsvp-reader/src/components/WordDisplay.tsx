@@ -3,9 +3,10 @@
 // This is the most performance-critical component – it renders on every tick.
 
 import React, { memo } from 'react';
-import { View, Text, StyleSheet, useColorScheme } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { splitByOrp } from '../utils/orp';
-import { Colors, Typography } from '../theme';
+import { Typography } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 import type { AppSettings } from '../utils/settings';
 import type { PlayState } from '../hooks/useRsvpEngine';
 
@@ -34,8 +35,7 @@ function WordDisplayComponent({
   showOrp,
   fontSize,
 }: Props) {
-  const scheme = useColorScheme();
-  const c      = scheme === 'dark' ? Colors.dark : Colors.light;
+  const c      = useTheme();
   const wStyle = FONT_STYLES[fontSize];
 
   const renderContent = () => {

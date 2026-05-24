@@ -13,6 +13,9 @@ export interface AppSettings {
   keepScreenAwake:   boolean;  // prevent sleep while reading
   rhythmicPauses:    boolean;  // longer pause after sentence endings
   lengthPauses:      boolean;  // longer display time for longer words
+  negationBoost:     boolean;  // extra time for negation words (nicht, kein, …)
+  numberBoost:       boolean;  // extra time for numbers, dates, percentages
+  readingModeId:     string;   // active mode preset id
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -23,6 +26,9 @@ export const DEFAULT_SETTINGS: AppSettings = {
   keepScreenAwake: true,
   rhythmicPauses:  true,
   lengthPauses:    true,
+  negationBoost:   false,
+  numberBoost:     false,
+  readingModeId:   'classic',
 };
 
 const STORAGE_KEY = '@rsvp_settings_v1';

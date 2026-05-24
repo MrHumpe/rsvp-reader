@@ -2,9 +2,10 @@
 // Speed control with live WPM readout.
 
 import React, { memo } from 'react';
-import { View, Text, StyleSheet, useColorScheme } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import Slider from '@react-native-community/slider';
-import { Colors, Typography, WPM_MIN, WPM_MAX } from '../theme';
+import { Typography, WPM_MIN, WPM_MAX } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 interface WpmSliderProps {
   wpm:      number;
@@ -12,8 +13,7 @@ interface WpmSliderProps {
 }
 
 export const WpmSlider = memo(function WpmSlider({ wpm, onChange }: WpmSliderProps) {
-  const scheme = useColorScheme();
-  const c      = scheme === 'dark' ? Colors.dark : Colors.light;
+  const c = useTheme();
 
   return (
     <View style={styles.container}>
@@ -52,8 +52,7 @@ interface ProgressBarProps {
 export const ProgressBar = memo(function ProgressBar({
   progress, position, total, timeLeft, onSeek,
 }: ProgressBarProps) {
-  const scheme = useColorScheme();
-  const c      = scheme === 'dark' ? Colors.dark : Colors.light;
+  const c = useTheme();
 
   return (
     <View style={pbStyles.container}>

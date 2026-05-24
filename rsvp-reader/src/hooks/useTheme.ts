@@ -1,11 +1,10 @@
 // src/hooks/useTheme.ts
-// Provides the correct color set based on the system color scheme.
-// Components import this hook instead of hardcoding colors.
+// Returns the active AppTheme from ThemeContext.
+// Components import this hook – never hardcode colors or call useColorScheme() directly.
 
-import { useColorScheme } from 'react-native';
-import { Colors, type ThemeColors } from '../theme';
+import { useThemeContext } from '../contexts/ThemeContext';
+import type { AppTheme } from '../utils/themes';
 
-export function useTheme(): ThemeColors {
-  const scheme = useColorScheme();
-  return scheme === 'dark' ? Colors.dark : Colors.light;
+export function useTheme(): AppTheme {
+  return useThemeContext().theme;
 }

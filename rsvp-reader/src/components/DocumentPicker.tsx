@@ -5,14 +5,15 @@
 import React, { useState, memo } from 'react';
 import {
   View, Text, TouchableOpacity, TextInput,
-  StyleSheet, useColorScheme, ActivityIndicator,
+  StyleSheet, ActivityIndicator,
   Modal, ScrollView, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import * as DocPicker from 'expo-document-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { extractText } from '../utils/textExtractor';
 import { formatTime, estimateReadingTime } from '../utils/textExtractor';
-import { Colors, Typography, Spacing, Radius } from '../theme';
+import { Typography, Spacing, Radius } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 interface Props {
   wpm:        number;
@@ -22,8 +23,7 @@ interface Props {
 type ImportState = 'idle' | 'loading' | 'error';
 
 export const DocumentPickerView = memo(function DocumentPickerView({ wpm, onTextReady }: Props) {
-  const scheme = useColorScheme();
-  const c      = scheme === 'dark' ? Colors.dark : Colors.light;
+  const c = useTheme();
 
   const [importState, setImportState] = useState<ImportState>('idle');
   const [errorMsg,    setErrorMsg]    = useState('');

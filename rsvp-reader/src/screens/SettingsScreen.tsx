@@ -1,24 +1,30 @@
 // src/screens/SettingsScreen.tsx
-// All configurable options.  Changes save to AsyncStorage immediately.
+// Restructured settings: reading mode presets at the top, theme picker,
+// then fine-tuning toggles for power users.
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
-  StyleSheet, useColorScheme, SafeAreaView, Alert,
+  StyleSheet, SafeAreaView, Alert, FlatList,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import {
   loadSettings, saveSettings, resetSettings,
   type AppSettings,
 } from '../utils/settings';
-import { ToggleRow } from '../components/ToggleRow';
+import { READING_MODES, getModeById } from '../utils/readingModes';
+import { THEME_IDS, THEME_LABELS, THEME_SWATCH } from '../utils/themes';
 import { useTheme } from '../hooks/useTheme';
-import { Colors, Typography, Spacing, Radius } from '../theme';
+import { useThemeContext } from '../contexts/ThemeContext';
+import { ToggleRow } from '../components/ToggleRow';
+import { ModeCard } from '../components/ModeCard';
 import { OnboardingModal } from './OnboardingModal';
+import { Typography, Spacing, Radius } from '../theme';
 
 export default function SettingsScreen() {
-  const c = useTheme();
-  const [settings, setSettings] = useState<AppSettings | null>(null);
+  const c                          = useTheme();
+  const { themeId, setThemeId }    = useThemeContext();
+  const [settings, setSettings]    = useState<AppSettings | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
@@ -33,6 +39,13 @@ export default function SettingsScreen() {
     saveSettings(updated);
   };
 
+  const applyMode = (modeId: string) => {
+    const mode    = getModeById(modeId);
+    const updated = { ...settings, ...mode.defaults, readingModeId: modeId };
+    setSettings(updated);
+    saveSettings(updated);
+  };
+
   const handleReset = () => {
     Alert.alert(
       'Einstellungen zurücksetzen',
@@ -40,8 +53,7 @@ export default function SettingsScreen() {
       [
         { text: 'Abbrechen', style: 'cancel' },
         {
-          text: 'Zurücksetzen',
-          style: 'destructive',
+          text: 'Zurücksetzen', style: 'destructive',
           onPress: async () => {
             const defaults = await resetSettings();
             setSettings(defaults);
@@ -55,19 +67,60 @@ export default function SettingsScreen() {
     <SafeAreaView style={[styles.safe, { backgroundColor: c.background }]}>
       <ScrollView contentContainerStyle={styles.scroll}>
 
-        {/* Lesegeschwindigkeit */}
-        <SectionHeader title="Lesegeschwindigkeit" color={c} />
+        {/* ── LESEMODUS ─────────────────────────────────────────────────── */}
+        <SectionHeader title="Lesemodus" color={c} />
+        <FlatList
+          data={READING_MODES}
+          keyExtractor={(m) => m.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.modeList}
+          renderItem={({ item }) => (
+            <ModeCard
+              mode={item}
+              selected={settings.readingModeId === item.id}
+              onPress={() => applyMode(item.id)}
+            />
+          )}
+        />
+        <Text style={[styles.modeHint, { color: c.textTertiary }]}>
+          {getModeById(settings.readingModeId).description}
+        </Text>
+
+        {/* ── DESIGN ────────────────────────────────────────────────────── */}
+        <SectionHeader title="Design" color={c} />
         <Card color={c}>
-          <Text style={[styles.wpmDisplay, { color: c.text }]}>
-            {settings.wpm}{' '}
-            <Text style={[styles.wpmUnit, { color: c.textSecondary }]}>wpm</Text>
-          </Text>
-          <Text style={[styles.hint, { color: c.textTertiary }]}>
-            Einstellbar direkt im Reader-Screen über den Slider.
-          </Text>
+          <View style={styles.themeRow}>
+            {THEME_IDS.map((id) => (
+              <TouchableOpacity
+                key={id}
+                style={styles.themeChip}
+                onPress={() => setThemeId(id)}
+                accessibilityLabel={THEME_LABELS[id]}
+                accessibilityRole="button"
+                accessibilityState={{ selected: themeId === id }}
+              >
+                <View style={[
+                  styles.themeSwatch,
+                  { backgroundColor: THEME_SWATCH[id], borderColor: c.borderStrong },
+                  themeId === id && styles.themeSwatchActive,
+                ]}>
+                  {id === 'system' && (
+                    <Ionicons name="phone-portrait-outline" size={14} color={c.textSecondary} />
+                  )}
+                  {themeId === id && id !== 'system' && (
+                    <Ionicons name="checkmark" size={14} color={id === 'light' || id === 'sepia' ? '#000' : '#fff'} />
+                  )}
+                </View>
+                <Text style={[styles.themeLabel, { color: c.textSecondary }]}>
+                  {THEME_LABELS[id]}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </Card>
 
-        {/* Anzeige */}
+        {/* ── ANZEIGE ───────────────────────────────────────────────────── */}
         <SectionHeader title="Anzeige" color={c} />
         <Card color={c}>
           <Text style={[styles.cardLabel, { color: c.textSecondary }]}>Schriftgröße</Text>
@@ -93,9 +146,7 @@ export default function SettingsScreen() {
               </TouchableOpacity>
             ))}
           </View>
-
           <Separator color={c} />
-
           <ToggleRow
             label="ORP-Pivot anzeigen"
             description="Roter Erkennungsbuchstabe für schnelleres Lesen"
@@ -104,7 +155,7 @@ export default function SettingsScreen() {
           />
         </Card>
 
-        {/* Wiedergabe */}
+        {/* ── WIEDERGABE ────────────────────────────────────────────────── */}
         <SectionHeader title="Wiedergabe" color={c} />
         <Card color={c}>
           <ToggleRow
@@ -116,7 +167,7 @@ export default function SettingsScreen() {
           <Separator color={c} />
           <ToggleRow
             label="Rhythmische Pausen"
-            description="Satzzeichen bekommen etwas mehr Zeit"
+            description="Satzzeichen bekommen mehr Anzeigezeit"
             value={settings.rhythmicPauses}
             onChange={(v) => update('rhythmicPauses', v)}
           />
@@ -129,6 +180,20 @@ export default function SettingsScreen() {
           />
           <Separator color={c} />
           <ToggleRow
+            label="Verneinungserkennung"
+            description="„nicht", „kein", „never" u.ä. länger anzeigen"
+            value={settings.negationBoost}
+            onChange={(v) => update('negationBoost', v)}
+          />
+          <Separator color={c} />
+          <ToggleRow
+            label="Zahlen & Einheiten"
+            description="Zahlen, Datumsangaben und Prozentwerte länger anzeigen"
+            value={settings.numberBoost}
+            onChange={(v) => update('numberBoost', v)}
+          />
+          <Separator color={c} />
+          <ToggleRow
             label="Bildschirm wach halten"
             description="Verhindert den Ruhezustand während des Lesens"
             value={settings.keepScreenAwake}
@@ -136,49 +201,44 @@ export default function SettingsScreen() {
           />
         </Card>
 
-        {/* Über */}
+        {/* ── ÜBER ──────────────────────────────────────────────────────── */}
         <SectionHeader title="Über" color={c} />
         <Card color={c}>
-          <InfoRow label="App-Name"    value="RSVP Reader"     color={c} />
+          <InfoRow label="App"       value="RSVP Reader"         color={c} />
           <Separator color={c} />
-          <InfoRow label="Version"     value="1.0.0"           color={c} />
+          <InfoRow label="Version"   value="1.0.0"               color={c} />
           <Separator color={c} />
-          <InfoRow label="Technik"     value="React Native / Expo" color={c} />
+          <InfoRow label="Technik"   value="React Native / Expo" color={c} />
           <Separator color={c} />
-          <InfoRow label="Methode"     value="RSVP + ORP-Pivot" color={c} />
+          <InfoRow label="Methode"   value="RSVP + ORP-Pivot"    color={c} />
         </Card>
 
-        {/* Intro */}
+        {/* ── AKTIONEN ──────────────────────────────────────────────────── */}
         <TouchableOpacity
-          style={[styles.resetButton, { borderColor: c.border }]}
+          style={[styles.actionButton, { borderColor: c.border }]}
           onPress={() => setShowOnboarding(true)}
-          accessibilityLabel="Einführung erneut anzeigen"
           accessibilityRole="button"
         >
           <Ionicons name="play-circle-outline" size={16} color={c.text} />
-          <Text style={[styles.resetLabel, { color: c.text }]}>
+          <Text style={[styles.actionLabel, { color: c.text }]}>
             Einführung erneut anzeigen
           </Text>
         </TouchableOpacity>
 
-        {/* Reset */}
         <TouchableOpacity
-          style={[styles.resetButton, { borderColor: '#E24B4A' }]}
+          style={[styles.actionButton, { borderColor: '#E24B4A' }]}
           onPress={handleReset}
-          accessibilityLabel="Einstellungen zurücksetzen"
           accessibilityRole="button"
         >
           <Ionicons name="refresh" size={16} color="#E24B4A" />
-          <Text style={[styles.resetLabel, { color: '#E24B4A' }]}>
+          <Text style={[styles.actionLabel, { color: '#E24B4A' }]}>
             Einstellungen zurücksetzen
           </Text>
         </TouchableOpacity>
+
       </ScrollView>
 
-      <OnboardingModal
-        visible={showOnboarding}
-        onFinish={() => setShowOnboarding(false)}
-      />
+      <OnboardingModal visible={showOnboarding} onFinish={() => setShowOnboarding(false)} />
     </SafeAreaView>
   );
 }
@@ -187,7 +247,9 @@ export default function SettingsScreen() {
 
 function SectionHeader({ title, color: c }: { title: string; color: ReturnType<typeof useTheme> }) {
   return (
-    <Text style={[styles.sectionTitle, { color: c.textSecondary }]}>{title.toUpperCase()}</Text>
+    <Text style={[styles.sectionTitle, { color: c.textSecondary }]}>
+      {title.toUpperCase()}
+    </Text>
   );
 }
 
@@ -212,9 +274,12 @@ function InfoRow({ label, value, color: c }: { label: string; value: string; col
   );
 }
 
+// ─── Styles ────────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
-  safe: { flex: 1 },
+  safe:   { flex: 1 },
   scroll: { padding: Spacing.md, paddingBottom: Spacing.xxl },
+
   sectionTitle: {
     ...Typography.caption,
     letterSpacing: 0.6,
@@ -223,11 +288,43 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
   },
   card: {
-    borderRadius: Radius.lg,
-    borderWidth:  0.5,
+    borderRadius:      Radius.lg,
+    borderWidth:       0.5,
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
   },
+
+  // Mode row
+  modeList:  { paddingVertical: 4 },
+  modeHint:  { ...Typography.caption, marginTop: 6, paddingHorizontal: 2 },
+
+  // Theme picker
+  themeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: Spacing.sm,
+  },
+  themeChip: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  themeSwatch: {
+    width:          40,
+    height:         40,
+    borderRadius:   Radius.md,
+    borderWidth:    1.5,
+    alignItems:     'center',
+    justifyContent: 'center',
+  },
+  themeSwatchActive: {
+    borderWidth: 3,
+  },
+  themeLabel: {
+    ...Typography.caption,
+    fontSize: 10,
+  },
+
+  // Font size chips
   cardLabel: {
     ...Typography.label,
     marginTop:    Spacing.sm,
@@ -235,8 +332,8 @@ const styles = StyleSheet.create({
   },
   chipRow: {
     flexDirection: 'row',
-    gap:           8,
-    marginBottom:  Spacing.sm,
+    gap: 8,
+    marginBottom: Spacing.sm,
   },
   chip: {
     paddingHorizontal: 16,
@@ -244,40 +341,24 @@ const styles = StyleSheet.create({
     borderRadius:       Radius.full,
     borderWidth:        0.5,
   },
-  sep: {
-    height: 0.5,
-    marginVertical: 2,
-  },
+
+  sep:     { height: 0.5, marginVertical: 2 },
   infoRow: {
     flexDirection:  'row',
     justifyContent: 'space-between',
     paddingVertical: 10,
   },
-  wpmDisplay: {
-    fontSize:   28,
-    fontWeight: '500',
-    marginTop:  Spacing.sm,
-  },
-  wpmUnit: {
-    fontSize:   16,
-    fontWeight: '400',
-  },
-  hint: {
-    ...Typography.caption,
-    marginBottom: Spacing.sm,
-    marginTop:    2,
-  },
-  resetButton: {
+
+  // Action buttons
+  actionButton: {
     flexDirection:  'row',
     alignItems:     'center',
     justifyContent: 'center',
     gap:             8,
-    marginTop:       Spacing.xl,
+    marginTop:       Spacing.md,
     borderWidth:     0.5,
     borderRadius:    Radius.md,
     padding:         14,
   },
-  resetLabel: {
-    ...Typography.body,
-  },
+  actionLabel: { ...Typography.body },
 });
